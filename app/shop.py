@@ -35,11 +35,14 @@ class Shop:
         print(f"Thanks, {customer_name}, for your purchase!")
         print("You have bought:")
 
+        total_cost = 0.0
+
         for product, quantity in cart.items():
             price = self.products[product] * quantity
-            price = self._format_price(price)
-            print(f"{quantity} {product}s for {price} dollars")
+            total_cost += price
+            formatted_price = self._format_price(price)
+            print(f"{quantity} {product}s for {formatted_price} dollars")
 
-        total = self._format_price(self.products_cost(cart))
-        print(f"Total cost is {total} dollars")
+        formatted_total = self._format_price(total_cost)
+        print(f"Total cost is {formatted_total} dollars")
         print("See you again!\n")
