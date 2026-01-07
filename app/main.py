@@ -20,7 +20,8 @@ def shop_trip() -> None:
         for shop in data["shops"]
     ]
 
-    customers = []
+    customers: list[Customer] = []
+
     for cust in data["customers"]:
         car = Car(
             cust["car"]["brand"],
@@ -39,13 +40,13 @@ def shop_trip() -> None:
     for customer in customers:
         print(f"{customer.name} has {customer.money} dollars")
 
-        options = []
+        options: list[tuple[float, Shop, float]] = []
 
         for shop in shops:
             dist = distance(customer.location, shop.location)
-            fuel = customer.car.fuel_cost(dist * 2, fuel_price)
-            products = shop.products_cost(customer.product_cart)
-            total = fuel + products
+            fuel_cost = customer.car.fuel_cost(dist * 2, fuel_price)
+            products_cost = shop.products_cost(customer.product_cart)
+            total = fuel_cost + products_cost
 
             print(
                 f"{customer.name}'s trip to the {shop.name} "
@@ -66,16 +67,20 @@ def shop_trip() -> None:
             )
             continue
 
-        total, shop, dist = min(affordable, key=lambda item: item[0])
+        total, chosen_shop, _ = min(
+            affordable,
+            key=lambda item: item[0],
+        )
 
-        print(f"{customer.name} rides to {shop.name}")
+        print(f"{customer.name} rides to {chosen_shop.name}")
 
-        customer.location = shop.location
-        shop.print_receipt(customer.name, customer.product_cart)
+        customer.location = chosen_shop.location
+        chosen_shop.print_receipt(
+            customer.name,
+            customer.product_cart,
+        )
 
-        fuel_spent = customer.car.fuel_cost(dist * 2, fuel_price)
-        products_spent = shop.products_cost(customer.product_cart)
-        customer.money -= fuel_spent + products_spent
+        customer.money -= total
 
         print(f"{customer.name} rides home")
         customer.location = customer.home
